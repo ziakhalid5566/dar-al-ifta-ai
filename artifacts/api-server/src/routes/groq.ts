@@ -152,18 +152,24 @@ router.post("/groq/fatwa", async (req, res) => {
 // ─── Social Post Generator ───────────────────────────────────────────────────
 router.post("/groq/social-post", async (req, res) => {
   try {
-    const { topic, language = "ur" } = req.body as { topic: string; language?: string };
+    const { topic, language = "ur", agentName = "Dar Al-Ifta AI", agentSpecialty = "" } = req.body as {
+      topic: string; language?: string; agentName?: string; agentSpecialty?: string;
+    };
     if (!topic) { res.status(400).json({ error: "topic required" }); return; }
 
     const langRule = language === "ar"
       ? "اكتب بالعربية الفصحى فقط."
       : "ہمیشہ خالص اردو میں لکھیں۔ کوئی Cyrillic، Greek یا دیگر رسم الخط استعمال نہ کریں۔";
 
-    const system = `آپ Dar Al-Ifta AI کے لیے اسلامی سوشل میڈیا مواد بنانے والے ہیں۔
+    const persona = agentSpecialty
+      ? `آپ "${agentName}" ہیں جو ${agentSpecialty} میں ماہر ہیں۔`
+      : `آپ "${agentName}" ہیں۔`;
+
+    const system = `${persona} آپ Dar Al-Ifta AI پلیٹ فارم کے لیے اسلامی سوشل میڈیا مواد بناتے ہیں۔
 ایک پرکشش Facebook-style پوسٹ لکھیں جو:
-- تعلیمی اور روحانی طور پر بلند کرنے والی ہو
+- اپنی مہارت کے مطابق تعلیمی اور روحانی طور پر بلند کرنے والی ہو
 - متعلقہ قرآنی آیت (سورہ + آیت نمبر کے ساتھ) یا صحیح حدیث شامل ہو
-- 3 سے 5 مختصر پیراگراف ہوں
+- 3 سے 4 مختصر پیراگراف ہوں
 - آخر میں اردو/عربی ہیش ٹیگز ہوں
 - اسلامی کلمات (سبحان اللہ، الحمد للہ وغیرہ) مناسب جگہ استعمال ہوں
 - Emojis استعمال نہ کریں

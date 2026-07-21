@@ -46,7 +46,10 @@ export default function TabLayout() {
     >
       <Tabs.Screen
         name="index"
-        options={{ href: null }}
+        options={{
+          title: 'Feed',
+          tabBarIcon: ({ color }) => <Ionicons name="newspaper-outline" size={22} color={color} />,
+        }}
       />
       <Tabs.Screen
         name="chat"

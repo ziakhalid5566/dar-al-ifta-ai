@@ -134,8 +134,10 @@ export async function getFatwaResearch(
 export async function generateSocialPost(
   topic: string,
   language = 'ur',
+  agentName = 'Dar Al-Ifta AI',
+  agentSpecialty = '',
 ): Promise<string> {
-  const data = await apiPost<{ content: string }>('/social-post', { topic, language });
+  const data = await apiPost<{ content: string }>('/social-post', { topic, language, agentName, agentSpecialty });
   return data.content;
 }
 
