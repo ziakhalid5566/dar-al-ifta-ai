@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   Platform,
-  Switch,
   ActivityIndicator,
   Alert,
 } from 'react-native';
@@ -62,7 +61,6 @@ export default function ChatScreen() {
 
   const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
   const [input, setInput] = useState('');
-  const [isMultiAgent, setIsMultiAgent] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [suggIdx, setSuggIdx] = useState(0);
   const inputRef = useRef<TextInput>(null);
@@ -94,7 +92,7 @@ export default function ChatScreen() {
       apiHistory.current = [...apiHistory.current, { role: 'user', content: text.trim() }];
 
       try {
-        const content = await sendChatMessage(apiHistory.current, isMultiAgent, language);
+        const content = await sendChatMessage(apiHistory.current, false, language);
         apiHistory.current = [...apiHistory.current, { role: 'assistant', content }];
 
         const aiMsg: Message = {
@@ -102,7 +100,7 @@ export default function ChatScreen() {
           text: content,
           isUser: false,
           time: getTime(),
-          sender: isMultiAgent ? 'Multi-Scholar Panel' : 'Islamic Assistant',
+          sender: 'Islamic Assistant',
         };
         setMessages(prev => [aiMsg, ...prev]);
       } catch (err) {
@@ -121,7 +119,7 @@ export default function ChatScreen() {
         setIsLoading(false);
       }
     },
-    [isLoading, isMultiAgent, language],
+    [isLoading, language],
   );
 
   const clearChat = useCallback(() => {
@@ -136,14 +134,14 @@ export default function ChatScreen() {
             const preview: ChatPreviewMessage[] = messages
               .slice(-4).reverse().slice(0, 2)
               .map(m => ({ isUser: m.isUser, content: m.text }));
-            saveChatSession({ timestamp: Date.now(), messageCount: messages.length - 1, isMultiAgent, preview });
+            saveChatSession({ timestamp: Date.now(), messageCount: messages.length - 1, isMultiAgent: false, preview });
           }
           setMessages(INITIAL_MESSAGES);
           apiHistory.current = [];
         },
       },
     ]);
-  }, [messages, isMultiAgent, saveChatSession]);
+  }, [messages, saveChatSession]);
 
   const renderMessage = useCallback(
     ({ item }: { item: Message }) => {
@@ -169,7 +167,7 @@ export default function ChatScreen() {
             { backgroundColor: item.error ? colors.destructive + '22' : colors.secondary },
           ]}>
             <Ionicons
-              name={item.error ? 'alert-circle' : isMultiAgent ? 'git-network' : 'sparkles'}
+              name={item.error ? 'alert-circle' : 'sparkles'}
               size={13}
               color={item.error ? colors.destructive : colors.primary}
             />
@@ -198,7 +196,7 @@ export default function ChatScreen() {
         </View>
       );
     },
-    [colors, baseFontSize, isMultiAgent],
+    [colors, baseFontSize],
   );
 
   return (
@@ -214,25 +212,6 @@ export default function ChatScreen() {
           <Text style={[styles.headerSub, { color: colors.mutedForeground }]}>
             {LANG_LABEL[language] ?? '🌐 Auto'}
           </Text>
-        </View>
-
-        {/* Multi-agent toggle */}
-        <View style={[styles.togglePill, {
-          backgroundColor: isMultiAgent ? colors.primary + '18' : colors.secondary,
-          borderColor: isMultiAgent ? colors.primary + '55' : 'transparent',
-        }]}>
-          <Ionicons name="git-network-outline" size={12} color={isMultiAgent ? colors.primary : colors.mutedForeground} />
-          <Text style={[styles.toggleLabel, { color: isMultiAgent ? colors.primary : colors.mutedForeground }]}>Multi</Text>
-          <Switch
-            value={isMultiAgent}
-            onValueChange={v => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              setIsMultiAgent(v);
-            }}
-            trackColor={{ false: colors.border, true: colors.primary }}
-            thumbColor={colors.card}
-            style={{ transform: [{ scaleX: 0.75 }, { scaleY: 0.75 }] }}
-          />
         </View>
 
         <TouchableOpacity
@@ -268,7 +247,7 @@ export default function ChatScreen() {
               ))}
             </View>
             <Text style={[styles.typingText, { color: colors.mutedForeground }]}>
-              {isMultiAgent ? 'علماء تحقیق کر رہے ہیں...' : 'جواب تیار ہو رہا ہے...'}
+              {'جواب تیار ہو رہا ہے...'}
             </Text>
           </View>
         </View>

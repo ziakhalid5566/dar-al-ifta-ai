@@ -208,47 +208,6 @@ export default function HomeScreen() {
           })}
         </ScrollView>
 
-        {/* ── Quick Access ── */}
-        {!inputText && (
-          <>
-            <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Quick Access</Text>
-            <View style={styles.quickRow}>
-              {/* Chat */}
-              <TouchableOpacity
-                activeOpacity={0.85}
-                style={[styles.quickCard, { backgroundColor: colors.card, borderColor: colors.border }]}
-                onPress={() => router.push('/(tabs)/chat')}
-              >
-                <View style={[styles.quickIconWrap, { backgroundColor: colors.secondary }]}>
-                  <Ionicons name="chatbubble-ellipses" size={22} color={colors.primary} />
-                </View>
-                <Text style={[styles.quickTitle, { color: colors.foreground }]}>Mufti Chat</Text>
-                <Text style={[styles.quickDesc, { color: colors.mutedForeground }]}>اپنا اسلامی سوال پوچھیں</Text>
-                <View style={[styles.quickBadge, { backgroundColor: colors.primary }]}>
-                  <Text style={[styles.quickBadgeText, { color: colors.primaryForeground }]}>آن لائن</Text>
-                </View>
-              </TouchableOpacity>
-
-              {/* Agents */}
-              <TouchableOpacity
-                activeOpacity={0.85}
-                style={[styles.quickCard, { backgroundColor: colors.card, borderColor: colors.border }]}
-                onPress={() => router.push('/(tabs)/agents')}
-              >
-                <View style={[styles.quickIconWrap, { backgroundColor: colors.secondary }]}>
-                  <Ionicons name="git-network" size={22} color={colors.primary} />
-                </View>
-                <Text style={[styles.quickTitle, { color: colors.foreground }]}>Agents Hub</Text>
-                <Text style={[styles.quickDesc, { color: colors.mutedForeground }]}>ماہر ایجنٹس سے رہنمائی</Text>
-                <View style={[styles.quickBadge, { backgroundColor: colors.secondary }]}>
-                  <Text style={[styles.quickBadgeText, { color: colors.primary }]}>6 Active</Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-
-          </>
-        )}
-
         {/* ── Fatwa list ── */}
         <View style={styles.sectionRow}>
           <Text style={[styles.sectionTitle, { color: colors.foreground }]}>
