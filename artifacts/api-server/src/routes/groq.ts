@@ -149,4 +149,34 @@ router.post("/groq/fatwa", async (req, res) => {
   }
 });
 
+// ─── Social Post Generator ───────────────────────────────────────────────────
+router.post("/groq/social-post", async (req, res) => {
+  try {
+    const { topic, language = "ur" } = req.body as { topic: string; language?: string };
+    if (!topic) { res.status(400).json({ error: "topic required" }); return; }
+
+    const langRule = language === "ar"
+      ? "اكتب بالعربية الفصحى فقط."
+      : "ہمیشہ خالص اردو میں لکھیں۔ کوئی Cyrillic، Greek یا دیگر رسم الخط استعمال نہ کریں۔";
+
+    const system = `آپ Dar Al-Ifta AI کے لیے اسلامی سوشل میڈیا مواد بنانے والے ہیں۔
+ایک پرکشش Facebook-style پوسٹ لکھیں جو:
+- تعلیمی اور روحانی طور پر بلند کرنے والی ہو
+- متعلقہ قرآنی آیت (سورہ + آیت نمبر کے ساتھ) یا صحیح حدیث شامل ہو
+- 3 سے 5 مختصر پیراگراف ہوں
+- آخر میں اردو/عربی ہیش ٹیگز ہوں
+- اسلامی کلمات (سبحان اللہ، الحمد للہ وغیرہ) مناسب جگہ استعمال ہوں
+- Emojis استعمال نہ کریں
+${langRule}`;
+
+    const content = await groqChat(
+      [{ role: "system", content: system }, { role: "user", content: `اس موضوع پر پوسٹ بنائیں: ${topic}` }],
+      900,
+    );
+    res.json({ content, model: MODEL });
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : "Groq API error" });
+  }
+});
+
 export default router;

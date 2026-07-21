@@ -4,6 +4,7 @@
  */
 
 const DOMAIN = process.env.EXPO_PUBLIC_DOMAIN;
+const API_ROOT = DOMAIN ? `https://${DOMAIN}/api` : null;
 
 // Startup check: EXPO_PUBLIC_DOMAIN is baked into the bundle at build time.
 // If it is missing, all API calls will build a broken URL ("https://undefined/api/groq").
@@ -127,4 +128,28 @@ export async function getFatwaResearch(
     language,
   });
   return data.content;
+}
+
+/** Generate a Facebook-style Islamic social post */
+export async function generateSocialPost(
+  topic: string,
+  language = 'ur',
+): Promise<string> {
+  const data = await apiPost<{ content: string }>('/social-post', { topic, language });
+  return data.content;
+}
+
+export interface ImageResult {
+  url: string;
+  title: string;
+  source: string;
+}
+
+/** Search Google Custom Search for images (proxied through api-server) */
+export async function searchImages(query: string): Promise<ImageResult[]> {
+  if (!API_ROOT) throw new Error('API server not configured.');
+  const res = await fetch(`${API_ROOT}/google/images?q=${encodeURIComponent(query)}`);
+  if (!res.ok) throw new Error(`Image search failed: ${res.status}`);
+  const data = await res.json() as { images: ImageResult[] };
+  return data.images ?? [];
 }
